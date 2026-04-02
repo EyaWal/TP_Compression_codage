@@ -197,8 +197,8 @@ for(i=0;i<H;i++)
 
 //PREDICTION
   
-   codeur_DPCM(x, err, H, W, step); 
-   decodeur_DPCM(err, xrec, H, W); 
+   my_codeurDPCM(x, err, H, W, step); 
+   my_decodeurDPCM(err, xrec, H, W); 
 
   
    //  codeur_adapt(x, err, H, W, step);  
@@ -234,3 +234,50 @@ void my_decodeurDPCM(int **err, unsigned char **xrec, int H, int W)
 
 
 */
+void my_codeurDPCM(unsigned char **x, int **err, int H, int W, int step)
+{
+    int i, j;
+    int pred;
+
+    for(i = 0; i < H; i++)
+    {
+        for(j = 0; j < W; j++)
+        {
+            if(j == 0)
+                pred = 0; // pas de voisin gauche
+            else
+                pred = x[i][j-1];
+
+            // erreur de prédiction
+            int e = (int)x[i][j] - pred;
+
+            // quantification
+            err[i][j] = (int)round((double)e / step);
+        }
+    }
+}
+void my_decodeurDPCM(int **err, unsigned char **xrec, int H, int W)
+{
+    int i, j;
+    int pred;
+
+    for(i = 0; i < H; i++)
+    {
+        for(j = 0; j < W; j++)
+        {
+            if(j == 0)
+                pred = 0;
+            else
+                pred = xrec[i][j-1];
+
+            // reconstruction
+            int val = pred + err[i][j] ;
+
+            // clamp entre 0 et 255
+            if(val < 0) val = 0;
+            if(val > 255) val = 255;
+
+            xrec[i][j] = (unsigned char)val;
+        }
+    }
+}
