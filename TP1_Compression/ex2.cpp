@@ -7,7 +7,9 @@
 #include "pred.h" 
 #include "dct.h"
 
- 
+ void my_codeurDPCM(unsigned char **x, int **err, int H, int W, int step); 
+ void my_decodeurDPCM(int **err, unsigned char **xrec, int H, int W); 
+
 int SaveIntImage_pgm(char *nom, int **im, int Height, int Width)
 { 
   int i, j;
@@ -221,19 +223,7 @@ for(i=0;i<H;i++)
   return 1; 
 }
 
-/*
-void my_codeurDPCM(unsigned char **x, int **err, int H, int W, int step)
-{
-//Fill this function ! 
-}
 
-void my_decodeurDPCM(int **err, unsigned char **xrec, int H, int W)
-{
-//Fill this function ! 
-}
-
-
-*/
 void my_codeurDPCM(unsigned char **x, int **err, int H, int W, int step)
 {
     int i, j;
@@ -252,7 +242,7 @@ void my_codeurDPCM(unsigned char **x, int **err, int H, int W, int step)
             int e = (int)x[i][j] - pred;
 
             // quantification
-            err[i][j] = (int)round((double)e / step);
+            err[i][j] = (int)quantiz((double)e, step);
         }
     }
 }
